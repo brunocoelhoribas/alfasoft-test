@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateContactRequest extends FormRequest {
     /**
@@ -20,7 +21,14 @@ class UpdateContactRequest extends FormRequest {
      */
     public function rules(): array {
         return [
-            //
+            'country_code' => 'required|string',
+            'number' => [
+                'required',
+                'digits:9',
+                Rule::unique('contacts')->where(function ($query) {
+                    return $query->where('country_code', $this->country_code);
+                }),
+            ],
         ];
     }
 }

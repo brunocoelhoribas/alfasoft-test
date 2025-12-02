@@ -50,7 +50,7 @@ class PersonController extends Controller {
      * Show the form for editing the specified resource.
      */
     public function edit(Person $person): Factory|View|Application {
-        return view('people.edit', compact($person));
+        return view('people.edit', compact('person'));
     }
 
     /**

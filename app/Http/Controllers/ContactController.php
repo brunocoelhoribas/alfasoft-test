@@ -10,13 +10,19 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class ContactController extends Controller {
     /**
      * Show the form for creating a new resource.
      */
     public function create(Person $person): Factory|View|Application {
-        return view('contact.create', compact('person'));
+        $countries = Cache::remember('countries_list', 60, function () {
+            return $this->getCountries();
+        });
+
+        return view('contacts.create', compact('person', 'countries'));
     }
 
     /**
@@ -31,14 +37,18 @@ class ContactController extends Controller {
      * Display the specified resource.
      */
     public function show(Contact $contact): Factory|View|Application {
-        return view('contact.show', compact('contact'));
+        return view('contacts.show', compact('contact'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Contact $contact): Factory|View|Application {
-        return view('contact.edit', compact('contact'));
+        $countries = Cache::remember('countries_list', 86400, function () {
+            return $this->getCountries();
+        });
+
+        return view('contacts.edit', compact('contact', 'countries'));
     }
 
     /**
@@ -57,5 +67,42 @@ class ContactController extends Controller {
         $contact->delete();
 
         return redirect()->route('people.show', $person)->with('success', 'Successfully deleted contact');
+    }
+
+    /**
+     * @return array
+     */
+    public function getCountries(): array {
+        $response = Http::get('https://restcountries.com/v3.1/all?fields=name,idd');
+
+        if ($response->failed()) {
+            return [];
+        }
+
+        $data = $response->json();
+        $formattedCountries = [];
+
+        foreach ($data as $country) {
+            $root = $country['idd']['root'] ?? '';
+            $suffixes = $country['idd']['suffixes'] ?? [''];
+            $suffix = count($suffixes) > 0 ? $suffixes[0] : '';
+            $callingCode = $root . $suffix;
+
+            if (empty($callingCode)) {
+                continue;
+            }
+
+            $formattedCountries[] = [
+                'name' => $country['name']['common'],
+                'code' => str_replace('+', '', $callingCode),
+                'label' => $country['name']['common'] . ' (' . $callingCode . ')'
+            ];
+        }
+
+        usort($formattedCountries, static function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        return $formattedCountries;
     }
 }
