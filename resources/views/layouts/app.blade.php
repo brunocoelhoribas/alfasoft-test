@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Contatos</title>
+    <title>Contact Manager</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -35,7 +35,7 @@
             <div class="flex">
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('people.index') }}" class="font-bold text-xl text-emerald-600 hover:text-emerald-800">
-                        ContactManager
+                        Contact Manager App
                     </a>
                 </div>
             </div>
