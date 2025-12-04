@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('country_code');
             $table->string('number', 9);
 
-            $table->unique(['country_code', 'numbercl']);
+            $table->unique(['country_code', 'number']);
         });
     }
 
