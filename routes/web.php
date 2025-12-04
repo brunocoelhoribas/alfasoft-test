@@ -17,8 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', static function () { return redirect()->route('people.index'); });
 Route::get('people', [PersonController::class, 'index'])->name('people.index');
-Route::get('people/{person}', [PersonController::class, 'show'])->name('people.show');
-Route::get('contacts/{contact}', [ContactController::class, 'show'])->name('contacts.show');
 
 Route::middleware('auth.basic')->group(function () {
     Route::get('people/create', [PersonController::class, 'create'])->name('people.create');
@@ -34,3 +32,6 @@ Route::middleware('auth.basic')->group(function () {
     Route::put('contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
     Route::delete('contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
 });
+
+Route::get('people/{person}', [PersonController::class, 'show'])->name('people.show');
+Route::get('contacts/{contact}', [ContactController::class, 'show'])->name('contacts.show');
